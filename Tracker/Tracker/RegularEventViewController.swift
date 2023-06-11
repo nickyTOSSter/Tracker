@@ -12,6 +12,20 @@ class RegularEventViewController: UIViewController {
     private var schedule: [WeekDay: Bool] = WeekDay.scheduleTemplate()
     private var category: String = "Важное"
     weak var delegate: TrackerAdditionDelegate?
+    private var allIsGood: Bool {
+        get {
+            guard let trackerName = nameTextField.text else {
+                return false
+            }
+
+            let selectedWeekDays = schedule.filter({ element in
+                element.value
+            })
+            return trackerName.isEmpty == false &&
+                selectedWeekDays.isEmpty == false &&
+                category.isEmpty == false
+        }
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,6 +41,7 @@ class RegularEventViewController: UIViewController {
         guard let trackerName = nameTextField.text else {
             return
         }
+
         let newTracker = Tracker(name: trackerName, color: .dodgerBlue, emoji: "😀", schedule: schedule)
         delegate?.trackerWasCreated(categoryName: category, tracker: newTracker)
         self.view.window!.rootViewController?.dismiss(animated: true, completion: nil)
@@ -42,6 +57,14 @@ class RegularEventViewController: UIViewController {
 
     private func setScheduleDescription() -> String {
         var description = ""
+        let selectedDays = schedule.filter({ element in
+            element.value
+        })
+        if selectedDays.count == 7 {
+            return "Каждый день"
+        }
+
+
         for (weekDay, selected) in schedule where selected {
             description += weekDay.shortDescription() + ", "
         }
@@ -49,6 +72,30 @@ class RegularEventViewController: UIViewController {
             description.removeLast(2)
         }
         return description
+    }
+
+    private func allPropertiesAreFilled() -> Bool {
+        guard let trackerName = nameTextField.text else {
+            return false
+        }
+
+        let selectedWeekDays = schedule.filter({ element in
+            element.value
+        })
+
+        return trackerName.isEmpty == false &&
+            selectedWeekDays.isEmpty == false &&
+            category.isEmpty == false
+    }
+
+    private func setCreationButtonAccessibility() {
+        if allIsGood {
+            createButton.backgroundColor = UIColor(red: 0.11, green: 0.11, blue: 0.13, alpha: 1)
+            createButton.isEnabled = true
+        } else {
+            createButton.backgroundColor = UIColor(red: 0.682, green: 0.686, blue: 0.706, alpha: 1)
+            createButton.isEnabled = false
+        }
     }
 
 }
@@ -101,6 +148,18 @@ extension RegularEventViewController: UITextFieldDelegate {
         let newString = currentString.replacingCharacters(in: range, with: string)
         return newString.count <= maxLength
     }
+
+    func textFieldShouldClear(_ textField: UITextField) -> Bool {
+        nameTextField.text = ""
+        setCreationButtonAccessibility()
+        return true
+    }
+
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        nameTextField.resignFirstResponder()
+        setCreationButtonAccessibility()
+        return true
+    }
 }
 
 protocol ScheduleDelegate: AnyObject {
@@ -110,6 +169,7 @@ protocol ScheduleDelegate: AnyObject {
 extension RegularEventViewController: ScheduleDelegate {
     func scheduleHasBeenSet(schedule: [WeekDay : Bool]) {
         self.schedule = schedule
+        setCreationButtonAccessibility()
         tableView.reloadData()
     }
 }
@@ -126,15 +186,23 @@ extension RegularEventViewController {
 
         nameTextField = UITextField()
         nameTextField.translatesAutoresizingMaskIntoConstraints = false
+        nameTextField.layer.masksToBounds = true
+        nameTextField.layer.cornerRadius = 16
+        nameTextField.backgroundColor = UIColor(red: 0.9, green: 0.91, blue: 0.92, alpha: 0.3)
         nameTextField.placeholder = "Введите название трекера"
         nameTextField.clearButtonMode = .whileEditing
         nameTextField.delegate = self
+        nameTextField.returnKeyType = .done
+        nameTextField.enablesReturnKeyAutomatically = true
+
         view.addSubview(nameTextField)
 
         tableView = UITableView()
         tableView.separatorStyle = .none
         tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.backgroundColor = .green
+        tableView.layer.masksToBounds = true
+        tableView.layer.cornerRadius = 16
+        tableView.backgroundColor = UIColor(red: 0.9, green: 0.91, blue: 0.92, alpha: 0.3)
         tableView.register(EventCreationTableViewCell.self, forCellReuseIdentifier: EventCreationTableViewCell.identifier)
         tableView.isScrollEnabled = true
         tableView.delegate = self
@@ -157,7 +225,8 @@ extension RegularEventViewController {
         createButton.addTarget(self, action: #selector(createButtonTapped), for: .touchUpInside)
         createButton.setTitle("Создать", for: .normal)
         createButton.setTitleColor(.white, for: .normal)
-        createButton.backgroundColor = UIColor(red: 0.682, green: 0.686, blue: 0.706, alpha: 1)
+        //createButton.backgroundColor = UIColor(red: 0.682, green: 0.686, blue: 0.706, alpha: 1)
+        setCreationButtonAccessibility()
         createButton.layer.masksToBounds = true
         createButton.layer.cornerRadius = 16
         view.addSubview(createButton)
@@ -171,7 +240,8 @@ extension RegularEventViewController {
             nameTextField.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 22),
             nameTextField.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
             nameTextField.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
-            tableView.topAnchor.constraint(equalTo: nameTextField.bottomAnchor, constant: 50),
+            nameTextField.heightAnchor.constraint(equalToConstant: 75),
+            tableView.topAnchor.constraint(equalTo: nameTextField.bottomAnchor, constant: 24),
             tableView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
             tableView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
             tableView.heightAnchor.constraint(equalToConstant: 150),

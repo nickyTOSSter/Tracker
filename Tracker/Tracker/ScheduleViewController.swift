@@ -23,6 +23,7 @@ class ScheduleViewController: UIViewController {
         titleLabel = UILabel()
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         titleLabel.text = "Расписание"
+        titleLabel.font = UIFont.systemFont(ofSize: 16)
         view.addSubview(titleLabel)
 
         tableView = UITableView()
@@ -31,6 +32,9 @@ class ScheduleViewController: UIViewController {
         tableView.backgroundColor = .green
         tableView.register(ScheduleCell.self, forCellReuseIdentifier: ScheduleCell.identifier)
         tableView.isScrollEnabled = false
+        tableView.layer.masksToBounds = true
+        tableView.layer.cornerRadius = 16
+        tableView.backgroundColor = UIColor(red: 0.9, green: 0.91, blue: 0.92, alpha: 0.3)
         tableView.delegate = self
         tableView.dataSource = self
         view.addSubview(tableView)
@@ -40,6 +44,7 @@ class ScheduleViewController: UIViewController {
         confirmButton.translatesAutoresizingMaskIntoConstraints = false
         confirmButton.setTitle("Готово", for: .normal)
         confirmButton.setTitleColor(.white, for: .normal)
+        confirmButton.titleLabel?.font = UIFont.systemFont(ofSize: 16)
         confirmButton.backgroundColor = .black
         confirmButton.addTarget(self, action: #selector(confirmButtonTapped), for: .touchUpInside)
         confirmButton.layer.masksToBounds = true
@@ -49,7 +54,7 @@ class ScheduleViewController: UIViewController {
 
     private func setupConstraints() {
         NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 13),
+            titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 27),
             titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             tableView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 50),
             tableView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),

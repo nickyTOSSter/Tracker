@@ -37,6 +37,7 @@ extension TrackerTypeSelectionViewController {
         titleLabel = UILabel()
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         titleLabel.text = "Создание трекера"
+        titleLabel.font = UIFont.systemFont(ofSize: 16)
         view.addSubview(titleLabel)
         addRegularEvent = createButton(title: "Привычка", action: #selector(addRegularEventDidTap))
         view.addSubview(addRegularEvent)
@@ -46,7 +47,7 @@ extension TrackerTypeSelectionViewController {
 
     private func setupConstraits() {
         NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 13),
+            titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 27),
             titleLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 114),
             addRegularEvent.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             addRegularEvent.centerYAnchor.constraint(equalTo: view.centerYAnchor),
@@ -67,6 +68,7 @@ extension TrackerTypeSelectionViewController {
         button.setTitle(title, for: .normal)
         button.tintColor = .white
         button.backgroundColor = UIColor(named: "black")
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 16)
         button.layer.masksToBounds = true
         button.layer.cornerRadius = 16
         button.addTarget(self, action: action, for: .touchUpInside)

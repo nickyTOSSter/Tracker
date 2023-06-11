@@ -9,7 +9,6 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
     let descriptionLabel = UILabel()
     let statisticLabel = UILabel()
     let completeButton = UIButton()
-    //var completed: Bool = false
     weak var delegate: TrackerCellDelegate?
     var indexPath: IndexPath?
 
@@ -77,7 +76,6 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
 
     private func setupCompleteButton() {
         completeButton.translatesAutoresizingMaskIntoConstraints = false
-        //setCompleteButtonImage()
         completeButton.imageEdgeInsets = UIEdgeInsets(top: 11.72, left: 11.72, bottom: 11.72, right: 11.72)
         completeButton.layer.masksToBounds = true
         completeButton.layer.cornerRadius = 17
@@ -121,15 +119,6 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
         guard let indexPath = indexPath else {
             return
         }
-//        completed.toggle()
-//        setCompleteButtonImage()
         delegate?.trackerCompletedButtonTapped(indexPath: indexPath)
     }
-
-//    private func setCompleteButtonImage() {
-//        let btnImage = UIImage(named: completed ? "done" : "plus")
-//        completeButton.setImage(btnImage?.withRenderingMode(.alwaysTemplate), for: .normal)
-//        completeButton.backgroundColor = completeButton.backgroundColor?.withAlphaComponent(completed ? 0.5 : 1)
-//    }
-
 }

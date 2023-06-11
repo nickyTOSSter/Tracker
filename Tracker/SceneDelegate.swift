@@ -23,9 +23,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         tabBarController.viewControllers = [trackerListNavigationVC, statisticNavigationVC]
 
         window?.rootViewController = tabBarController
-        //window?.rootViewController = RegularEventViewController()
-        //window?.rootViewController = ScheduleViewController()
-        //window?.rootViewController = NonregularEventViewController()
         window?.makeKeyAndVisible()
     }
 

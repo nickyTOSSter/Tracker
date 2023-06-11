@@ -7,6 +7,7 @@ class TrackersViewController: UIViewController {
     private var datePicker: UIDatePicker!
     private var searchField: UISearchTextField!
     private var currentDate: Date = Date()
+    private var messageLabel: UILabel!
 
     private let collectionView: UICollectionView = {
         let collectionView = UICollectionView(
@@ -99,11 +100,25 @@ class TrackersViewController: UIViewController {
 
     private func setupStubImageVisibility() {
         imageView.isHidden = !visibleCategories.isEmpty
+        messageLabel.isHidden = !visibleCategories.isEmpty
+        if let searchText = searchField.text, searchText.isEmpty == false {
+            messageLabel.text = "Ничего не найдено"
+            imageView.image = UIImage(named: "emptySearch")
+
+        } else {
+            messageLabel.text = "Что будем отслеживать?"
+            imageView.image = UIImage(named: "emptyListImage")
+        }
     }
 
     private func trackerIsCompletedOnChosenDate(_ tracker: Tracker) -> Bool {
-        if let completedTracker = completedTrackers.first(where: { trackerRecord in
-            trackerRecord.id == tracker.id && trackerRecord.completionDate == currentDate
+        guard let dateWithoutTime = Calendar.current.date(from: Calendar.current.dateComponents([.year, .month, .day], from: currentDate)) else {
+            return false
+        }
+
+
+        if let _ = completedTrackers.first(where: { trackerRecord in
+            trackerRecord.id == tracker.id && trackerRecord.completionDate == dateWithoutTime
         }) {
             return true
         } else {
@@ -130,6 +145,12 @@ extension TrackersViewController: UITextFieldDelegate {
         }
 
         filterTrackers(with: searchString)
+        return true
+    }
+
+    func textFieldShouldClear(_ textField: UITextField) -> Bool {
+        searchField.text = ""
+        filterTrackers(with: "")
         return true
     }
 }
@@ -167,14 +188,24 @@ protocol TrackerCellDelegate: AnyObject {
 
 extension TrackersViewController: TrackerCellDelegate {
     func trackerCompletedButtonTapped(indexPath: IndexPath) {
+
+        guard let dateWithoutTime = Calendar.current.date(from: Calendar.current.dateComponents([.year, .month, .day], from: currentDate)),
+              let todayWithoutTime = Calendar.current.date(from: Calendar.current.dateComponents([.year, .month, .day], from: Date())) else {
+            return
+        }
+
+        if dateWithoutTime > todayWithoutTime {
+            return
+        }
+
         let tracker = visibleCategories[indexPath.section].trackers[indexPath.row]
 
         if let completedTracker = completedTrackers.first(where: { trackerRecord in
-            trackerRecord.id == tracker.id && trackerRecord.completionDate == currentDate
+            trackerRecord.id == tracker.id && trackerRecord.completionDate == dateWithoutTime
         }) {
             completedTrackers.remove(completedTracker)
         } else {
-            let trackerRecord = TrackerRecord(id: tracker.id, completionDate: currentDate)
+            let trackerRecord = TrackerRecord(id: tracker.id, completionDate: dateWithoutTime)
             completedTrackers.insert(trackerRecord)
         }
 
@@ -285,6 +316,13 @@ extension TrackersViewController {
 
         imageView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(imageView)
+
+        messageLabel = UILabel()
+        messageLabel.text = "Что будем отслеживать?"
+        messageLabel.font = UIFont.boldSystemFont(ofSize: 12)
+        messageLabel.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(messageLabel)
+
     }
 
     private func setupConstraits() {
@@ -304,7 +342,8 @@ extension TrackersViewController {
             collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             imageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             imageView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-
+            messageLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            messageLabel.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 8)
         ])
     }
 }
