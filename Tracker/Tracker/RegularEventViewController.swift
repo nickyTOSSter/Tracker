@@ -8,6 +8,7 @@ class RegularEventViewController: UIViewController {
     private var tableView: UITableView!
     private var cancelButton: UIButton!
     private var createButton: UIButton!
+    private var inputContainer: UIView!
     private var listItems = ["Категория", "Расписание"]
     private var schedule: [WeekDay: Bool] = WeekDay.scheduleTemplate()
     private var category: String = "Важное"
@@ -132,6 +133,7 @@ extension RegularEventViewController: UITableViewDataSource {
             cell.subtitle.text = setScheduleDescription()
          }
 
+        cell.backgroundColor = UIColor(red: 0.902, green: 0.910, blue: 0.922, alpha: 0.3)
         return cell
     }
 
@@ -182,27 +184,31 @@ extension RegularEventViewController {
         titleLabel = UILabel()
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         titleLabel.text = "Новая привычка"
+        titleLabel.font = UIFont.systemFont(ofSize: 16, weight: .medium)
         view.addSubview(titleLabel)
+
+        inputContainer = UIView()
+        inputContainer.translatesAutoresizingMaskIntoConstraints = false
+        inputContainer.backgroundColor = UIColor(red: 0.9, green: 0.91, blue: 0.92, alpha: 0.3)
+        inputContainer.layer.masksToBounds = true
+        inputContainer.layer.cornerRadius = 16
+
 
         nameTextField = UITextField()
         nameTextField.translatesAutoresizingMaskIntoConstraints = false
-        nameTextField.layer.masksToBounds = true
-        nameTextField.layer.cornerRadius = 16
-        nameTextField.backgroundColor = UIColor(red: 0.9, green: 0.91, blue: 0.92, alpha: 0.3)
         nameTextField.placeholder = "Введите название трекера"
         nameTextField.clearButtonMode = .whileEditing
         nameTextField.delegate = self
         nameTextField.returnKeyType = .done
         nameTextField.enablesReturnKeyAutomatically = true
-
-        view.addSubview(nameTextField)
+        inputContainer.addSubview(nameTextField)
+        view.addSubview(inputContainer)
 
         tableView = UITableView()
         tableView.separatorStyle = .none
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.layer.masksToBounds = true
         tableView.layer.cornerRadius = 16
-        tableView.backgroundColor = UIColor(red: 0.9, green: 0.91, blue: 0.92, alpha: 0.3)
         tableView.register(EventCreationTableViewCell.self, forCellReuseIdentifier: EventCreationTableViewCell.identifier)
         tableView.isScrollEnabled = true
         tableView.delegate = self
@@ -225,7 +231,6 @@ extension RegularEventViewController {
         createButton.addTarget(self, action: #selector(createButtonTapped), for: .touchUpInside)
         createButton.setTitle("Создать", for: .normal)
         createButton.setTitleColor(.white, for: .normal)
-        //createButton.backgroundColor = UIColor(red: 0.682, green: 0.686, blue: 0.706, alpha: 1)
         setCreationButtonAccessibility()
         createButton.layer.masksToBounds = true
         createButton.layer.cornerRadius = 16
@@ -235,12 +240,15 @@ extension RegularEventViewController {
 
     private func setupConstraits() {
         NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 13),
+            titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 27),
             titleLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 122),
-            nameTextField.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 22),
-            nameTextField.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
-            nameTextField.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
-            nameTextField.heightAnchor.constraint(equalToConstant: 75),
+            inputContainer.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 22),
+            inputContainer.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
+            inputContainer.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
+            inputContainer.heightAnchor.constraint(equalToConstant: 75),
+            nameTextField.centerYAnchor.constraint(equalTo: inputContainer.centerYAnchor),
+            nameTextField.leadingAnchor.constraint(equalTo: inputContainer.leadingAnchor, constant: 16),
+            nameTextField.trailingAnchor.constraint(equalTo: inputContainer.trailingAnchor, constant: -16),
             tableView.topAnchor.constraint(equalTo: nameTextField.bottomAnchor, constant: 24),
             tableView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
             tableView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),

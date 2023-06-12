@@ -29,6 +29,10 @@ class ScheduleCell: UITableViewCell {
         switcher.onTintColor = .blue
         switcher.addTarget(self, action: #selector(switchValueChanged), for: .valueChanged)
         contentView.addSubview(switcher)
+
+        contentView.layer.masksToBounds = true
+        contentView.layer.cornerRadius = 16
+        
     }
 
     @objc private func switchValueChanged(sender: UISwitch) {

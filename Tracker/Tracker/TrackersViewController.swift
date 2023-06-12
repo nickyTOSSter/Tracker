@@ -2,10 +2,6 @@ import UIKit
 
 class TrackersViewController: UIViewController {
 
-    private var addButton: UIButton!
-    private var titleLabel: UILabel!
-    private var datePicker: UIDatePicker!
-    private var searchField: UISearchTextField!
     private var currentDate: Date = Date()
     private var messageLabel: UILabel!
 
@@ -33,6 +29,7 @@ class TrackersViewController: UIViewController {
     private var categories: [TrackerCategory] = []
     private var visibleCategories: [TrackerCategory] = []
     private var completedTrackers: Set<TrackerRecord> = []
+    private let searchController = UISearchController(searchResultsController: nil)
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -45,8 +42,47 @@ class TrackersViewController: UIViewController {
         collectionView.dataSource = self
         collectionView.delegate = self
         setupStubImageVisibility()
-        filterTrackers(with: searchField.text)
-     }
+        filterTrackers(with: searchController.searchBar.text)
+        navigationController?.navigationBar.prefersLargeTitles = true
+        setNavBarElements()
+        searchController.searchResultsUpdater = self
+        searchController.obscuresBackgroundDuringPresentation = false
+        searchController.hidesNavigationBarDuringPresentation = false
+        searchController.searchBar.placeholder = "Поиск"
+        searchController.definesPresentationContext = true
+        searchController.searchBar.searchTextField.clearButtonMode = .never
+        navigationItem.searchController = searchController
+        navigationItem.hidesSearchBarWhenScrolling = false
+        navigationController!.navigationBar.sizeToFit()
+    }
+
+    private func setNavBarElements() {
+
+        let addNewTrackerButton: UIBarButtonItem = {
+            let barButton = UIBarButtonItem()
+            barButton.tintColor = UIColor(named: "black")
+            barButton.style = .plain
+            barButton.image = UIImage(named: "plus")
+            barButton.target = self
+            barButton.action = #selector(addButtonTapped)
+            return barButton
+        }()
+
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "dd.MM.yyyy"
+        dateFormatter.locale = Locale(identifier: "ru_RU")
+
+        let datePicker = UIDatePicker()
+        datePicker.locale = dateFormatter.locale
+        datePicker.datePickerMode = .date
+        datePicker.preferredDatePickerStyle = .compact
+        datePicker.addTarget(self, action: #selector(dateChanged), for: .valueChanged)
+
+        title = "Трекеры"
+        navigationItem.leftBarButtonItem = addNewTrackerButton
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: datePicker)
+    }
+
 
     @objc private func addButtonTapped() {
         let vc = TrackerTypeSelectionViewController()
@@ -55,9 +91,9 @@ class TrackersViewController: UIViewController {
         present(vc, animated: true)
     }
 
-    @objc private func dateChanged() {
+    @objc private func dateChanged(_ datePicker: UIDatePicker) {
         currentDate = datePicker.date
-        filterTrackers(with: searchField.text)
+        filterTrackers(with: searchController.searchBar.text)
     }
 
     private func filterTrackers(with name: String?) {
@@ -86,7 +122,7 @@ class TrackersViewController: UIViewController {
     }
 
     private func filterTrackersByName(_ tracker: Tracker, name: String?) -> Bool {
-        guard let name = name else {
+        guard let name = name?.lowercased() else {
             return true
         }
 
@@ -101,7 +137,7 @@ class TrackersViewController: UIViewController {
     private func setupStubImageVisibility() {
         imageView.isHidden = !visibleCategories.isEmpty
         messageLabel.isHidden = !visibleCategories.isEmpty
-        if let searchText = searchField.text, searchText.isEmpty == false {
+        if let searchText = searchController.searchBar.text, searchText.isEmpty == false {
             messageLabel.text = "Ничего не найдено"
             imageView.image = UIImage(named: "emptySearch")
 
@@ -135,26 +171,6 @@ class TrackersViewController: UIViewController {
     }
 }
 
-extension TrackersViewController: UITextFieldDelegate {
-    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        let currentString = textField.text! as NSString
-        let searchString = currentString.replacingCharacters(in: range, with: string).lowercased()
-
-        if String(currentString) == searchString {
-            return false
-        }
-
-        filterTrackers(with: searchString)
-        return true
-    }
-
-    func textFieldShouldClear(_ textField: UITextField) -> Bool {
-        searchField.text = ""
-        filterTrackers(with: "")
-        return true
-    }
-}
-
 protocol TrackerAdditionDelegate: AnyObject {
     func trackerWasCreated(categoryName: String, tracker: Tracker)
 }
@@ -177,7 +193,7 @@ extension TrackersViewController: TrackerAdditionDelegate {
         }
 
         categories = newCategories
-        filterTrackers(with: searchField.text!)
+        filterTrackers(with: searchController.searchBar.text)
         reloadCollectionView()
     }
 }
@@ -282,35 +298,6 @@ extension TrackersViewController: UICollectionViewDelegateFlowLayout {
 // MARK: - UI elemets creation
 extension TrackersViewController {
     private func setupViews() {
-        addButton = UIButton()
-        addButton.setImage(UIImage(named: "plus")?.withRenderingMode(.alwaysTemplate), for: .normal)
-        addButton.tintColor = UIColor(named: "black")
-        addButton.addTarget(self, action: #selector(addButtonTapped), for: .touchUpInside)
-        addButton.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(addButton)
-
-        titleLabel = UILabel()
-        titleLabel.text = "Трекеры"
-        titleLabel.font = UIFont.boldSystemFont(ofSize: 34)
-        titleLabel.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(titleLabel)
-
-        datePicker = UIDatePicker()
-        datePicker.locale = Locale(identifier: "ru_RU")
-        datePicker.datePickerMode = .date
-        datePicker.preferredDatePickerStyle = .compact
-        datePicker.addTarget(self, action: #selector(dateChanged), for: .editingDidEnd)
-        datePicker.translatesAutoresizingMaskIntoConstraints = false
-        datePicker.setDate(currentDate, animated: true)
-        view.addSubview(datePicker)
-
-        searchField = UISearchTextField()
-        searchField.placeholder = "Поиск"
-        searchField.delegate = self
-        searchField.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(searchField)
-
-
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(collectionView)
 
@@ -327,16 +314,7 @@ extension TrackersViewController {
 
     private func setupConstraits() {
         NSLayoutConstraint.activate([
-            addButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            addButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 18),
-            titleLabel.topAnchor.constraint(equalTo: addButton.bottomAnchor, constant: 13),
-            titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 18),
-            datePicker.centerYAnchor.constraint(equalTo: titleLabel.centerYAnchor),
-            datePicker.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            searchField.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 7),
-            searchField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            searchField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            collectionView.topAnchor.constraint(equalTo: searchField.bottomAnchor, constant: 34),
+            collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 24),
             collectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
             collectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
             collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
@@ -345,5 +323,12 @@ extension TrackersViewController {
             messageLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             messageLabel.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 8)
         ])
+    }
+}
+
+extension TrackersViewController: UISearchResultsUpdating {
+
+    func updateSearchResults(for searchController: UISearchController) {
+       filterTrackers(with: searchController.searchBar.text)
     }
 }

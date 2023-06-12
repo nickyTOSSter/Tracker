@@ -21,7 +21,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let statisticNavigationVC = UINavigationController(rootViewController: statisticViewController)
 
         tabBarController.viewControllers = [trackerListNavigationVC, statisticNavigationVC]
-
         window?.rootViewController = tabBarController
         window?.makeKeyAndVisible()
     }
