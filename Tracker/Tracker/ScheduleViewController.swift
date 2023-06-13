@@ -31,6 +31,7 @@ class ScheduleViewController: UIViewController {
         tableView.separatorStyle = .none
         tableView.register(ScheduleCell.self, forCellReuseIdentifier: ScheduleCell.identifier)
         tableView.isScrollEnabled = false
+        tableView.allowsSelection = false
         tableView.delegate = self
         tableView.dataSource = self
         view.addSubview(tableView)
@@ -114,7 +115,7 @@ extension ScheduleViewController: UITableViewDataSource {
     private func addSeparator(for cell: UITableViewCell) {
         let separator = UIView(frame: CGRect(x: 0, y: 0, width: cell.frame.size.width, height: 1))
         separator.translatesAutoresizingMaskIntoConstraints = false
-        separator.backgroundColor = .gray
+        separator.backgroundColor = UIColor(red: 0.682, green: 0.686, blue: 0.706, alpha: 1)
         cell.addSubview(separator)
 
         NSLayoutConstraint.activate([

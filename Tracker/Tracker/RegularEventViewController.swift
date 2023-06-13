@@ -249,7 +249,7 @@ extension RegularEventViewController {
             nameTextField.centerYAnchor.constraint(equalTo: inputContainer.centerYAnchor),
             nameTextField.leadingAnchor.constraint(equalTo: inputContainer.leadingAnchor, constant: 16),
             nameTextField.trailingAnchor.constraint(equalTo: inputContainer.trailingAnchor, constant: -16),
-            tableView.topAnchor.constraint(equalTo: nameTextField.bottomAnchor, constant: 24),
+            tableView.topAnchor.constraint(equalTo: inputContainer.bottomAnchor, constant: 24),
             tableView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
             tableView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
             tableView.heightAnchor.constraint(equalToConstant: 150),
