@@ -9,7 +9,7 @@ class ScheduleViewController: UIViewController {
         .monday, .tuesday, .wednesday, .thursday,
         .friday, .saturday, .sunday
     ]
-    var schedule: [WeekDay: Bool]!
+    var schedule: [WeekDay] = []
 
     weak var delegate: ScheduleDelegate?
     
@@ -19,6 +19,7 @@ class ScheduleViewController: UIViewController {
         setupViews()
         setupConstraints()
     }
+
     private func setupViews() {
         titleLabel = UILabel()
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -73,11 +74,9 @@ class ScheduleViewController: UIViewController {
 }
 
 extension ScheduleViewController: UITableViewDelegate {
-
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         75
     }
-
 }
 
 extension ScheduleViewController: UITableViewDataSource {
@@ -91,7 +90,7 @@ extension ScheduleViewController: UITableViewDataSource {
         }
         let weekDay = weekDays[indexPath.row]
         cell.title.text = weekDay.description()
-        let weekDayIsSelected = schedule[weekDay, default: false]
+        let weekDayIsSelected = schedule.contains(weekDay)
         cell.switcher.isOn = weekDayIsSelected
         cell.switcher.tag = indexPath.row
         if indexPath.row != 0 {
@@ -135,8 +134,10 @@ protocol ScheduleCellDelegate {
 extension ScheduleViewController: ScheduleCellDelegate {
     func switchValueChanged(for row: Int, value: Bool) {
         let weekDay = weekDays[row]
-        schedule[weekDay] = value
+        if let index = schedule.firstIndex(of: weekDay) {
+            schedule.remove(at: index)
+        } else {
+            schedule.append(weekDay)
+        }
     }
-
-
 }

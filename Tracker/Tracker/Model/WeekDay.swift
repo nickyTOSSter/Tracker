@@ -9,6 +9,29 @@ enum WeekDay: Int {
     case saturday
     case sunday
 
+    static func weekDay(from date: Date) -> WeekDay {
+        let weekDayNumber = Calendar.current.component(.weekday, from: date)
+        if weekDayNumber == 1 {
+            return .sunday
+        } else {
+            let euWeekDayNumber = weekDayNumber - 1
+            return WeekDay(rawValue: euWeekDayNumber)!
+        }
+    }
+
+    static func encode(weekDays: [WeekDay]) -> String {
+        weekDays
+            .map({ "\($0.rawValue)" })
+            .joined(separator: ", ")
+    }
+
+    static func decode(weekDays: String) -> [WeekDay] {
+        weekDays
+            .components(separatedBy: ", ")
+            .compactMap({ Int($0) })
+            .compactMap({ WeekDay(rawValue: $0) })
+    }
+
     func description() -> String {
         switch self {
         case .monday:
@@ -48,22 +71,4 @@ enum WeekDay: Int {
 
     }
 
-    static func scheduleTemplate() -> [WeekDay: Bool] {
-        [
-            .monday: false, .tuesday: false,
-            .wednesday: false, .thursday: false,
-            .friday: false, .saturday: false,
-            .sunday: false
-        ]
-    }
-
-    static func weekDay(from date: Date) -> WeekDay {
-        let weekDayNumber = Calendar.current.component(.weekday, from: date)
-        if weekDayNumber == 1 {
-            return .sunday
-        } else {
-            let euWeekDayNumber = weekDayNumber - 1
-            return WeekDay(rawValue: euWeekDayNumber)!
-        }
-    }
 }
