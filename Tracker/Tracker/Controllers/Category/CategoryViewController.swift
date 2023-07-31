@@ -1,5 +1,4 @@
 import UIKit
-import CoreData
 
 class CategoryViewController: UIViewController {
     private var titleLabel: UILabel!
