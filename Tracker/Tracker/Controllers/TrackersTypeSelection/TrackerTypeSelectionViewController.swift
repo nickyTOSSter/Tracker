@@ -23,10 +23,6 @@ class TrackerTypeSelectionViewController: UIViewController {
     }
 
     @objc private func addNonregularEventDidTap() {
-        let vc = NonregularEventViewController()
-        vc.modalPresentationStyle = .automatic
-        vc.delegate = delegate
-        present(vc, animated: true)
     }
 
 }

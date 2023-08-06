@@ -6,28 +6,32 @@ class RegularEventViewController: UIViewController {
     private var titleLabel: UILabel!
     private var nameTextField: UITextField!
     private var tableView: UITableView!
+    private let collectionView: UICollectionView = {
+        let collectionView = UICollectionView(
+            frame: .zero,
+            collectionViewLayout: UICollectionViewFlowLayout()
+        )
+        collectionView.register(EmojiCell.self, forCellWithReuseIdentifier: EmojiCell.identifier)
+        collectionView.register(NewTrackerSupplementaryView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: NewTrackerSupplementaryView.identifier)
+        return collectionView
+    }()
+
+    private lazy var scrollView: UIScrollView = {
+        let scrollView = UIScrollView()
+        scrollView.keyboardDismissMode = .onDrag
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        return scrollView
+    }()
+
+
     private var cancelButton: UIButton!
     private var createButton: UIButton!
     private var inputContainer: UIView!
-    private var listItems = ["Категория", "Расписание"]
-    private var schedule: [WeekDay: Bool] = WeekDay.scheduleTemplate()
-    private var category: String = "Важное"
+    private var selectedEmojiIndexPath: IndexPath?
+    private var selectedColorIndexPath: IndexPath?
     weak var delegate: TrackerAdditionDelegate?
-    private var allIsGood: Bool {
-        get {
-            guard let trackerName = nameTextField.text else {
-                return false
-            }
 
-            let selectedWeekDays = schedule.filter({ element in
-                element.value
-            })
-            return trackerName.isEmpty == false &&
-                selectedWeekDays.isEmpty == false &&
-                category.isEmpty == false
-        }
-    }
-
+    var creationManager = CreationManager()
     override func viewDidLoad() {
         super.viewDidLoad()
         setupViews()
@@ -36,61 +40,26 @@ class RegularEventViewController: UIViewController {
 
     @objc private func cancelButtonTapped() {
         dismiss(animated: true)
-     }
+    }
 
     @objc private func createButtonTapped() {
-        guard let trackerName = nameTextField.text else {
+        guard let tracker = creationManager.newTracker() else {
             return
         }
-
-        let newTracker = Tracker(name: trackerName, color: .dodgerBlue, emoji: "😀", schedule: schedule)
-        delegate?.trackerWasCreated(categoryName: category, tracker: newTracker)
+        delegate?.trackerWasCreated(category: creationManager.category!, tracker: tracker)
         self.view.window!.rootViewController?.dismiss(animated: true, completion: nil)
     }
 
     private func selectSchedule() {
         let vc = ScheduleViewController()
         vc.delegate = self
-        vc.schedule = schedule
+        vc.schedule = creationManager.schedule
         vc.modalPresentationStyle = .automatic
         present(vc, animated: true)
     }
 
-    private func setScheduleDescription() -> String {
-        var description = ""
-        let selectedDays = schedule.filter({ element in
-            element.value
-        })
-        if selectedDays.count == 7 {
-            return "Каждый день"
-        }
-
-
-        for (weekDay, selected) in schedule where selected {
-            description += weekDay.shortDescription() + ", "
-        }
-        if !description.isEmpty {
-            description.removeLast(2)
-        }
-        return description
-    }
-
-    private func allPropertiesAreFilled() -> Bool {
-        guard let trackerName = nameTextField.text else {
-            return false
-        }
-
-        let selectedWeekDays = schedule.filter({ element in
-            element.value
-        })
-
-        return trackerName.isEmpty == false &&
-            selectedWeekDays.isEmpty == false &&
-            category.isEmpty == false
-    }
-
     private func setCreationButtonAccessibility() {
-        if allIsGood {
+        if creationManager.isReadyForCreation() {
             createButton.backgroundColor = UIColor(red: 0.11, green: 0.11, blue: 0.13, alpha: 1)
             createButton.isEnabled = true
         } else {
@@ -99,6 +68,19 @@ class RegularEventViewController: UIViewController {
         }
     }
 
+    private func selectCategory() {
+        let vc = CategoryViewController()
+        vc.delegate = self
+        vc.modalPresentationStyle = .automatic
+        present(vc, animated: true)
+    }
+}
+
+extension RegularEventViewController: CategoryViewControllerDelegate {
+    func categoryDidSelect(_ category: TrackerCategory) {
+        creationManager.category = category
+        tableView.reloadData()
+    }
 }
 
 extension RegularEventViewController: UITableViewDelegate {
@@ -108,10 +90,10 @@ extension RegularEventViewController: UITableViewDelegate {
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if indexPath.row == 0 {
-
-        } else if indexPath.row == 1 {
+        if creationManager.isSchedule(row: indexPath.row) {
             selectSchedule()
+        } else {
+            selectCategory()
         }
     }
 }
@@ -121,24 +103,27 @@ extension RegularEventViewController: UITableViewDataSource {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: EventCreationTableViewCell.identifier, for: indexPath) as? EventCreationTableViewCell else {
             return UITableViewCell()
         }
-        cell.title.text = listItems[indexPath.row]
+        cell.title.text = creationManager.listItems[indexPath.row]
 
         cell.accessoryType = .disclosureIndicator
         cell.selectionStyle = .none
 
-        if indexPath.row == 0 {
-            cell.subtitle.text = category
-        } else if indexPath.row == 1 {
+        if creationManager.isSchedule(row: indexPath.row) {
             addSeparator(for: cell)
-            cell.subtitle.text = setScheduleDescription()
-         }
+            cell.subtitle.text = creationManager.getScheduleDescription()
+
+        } else {
+            if let category = creationManager.category {
+                cell.subtitle.text = creationManager.category?.name
+            }
+        }
 
         cell.backgroundColor = UIColor(red: 0.902, green: 0.910, blue: 0.922, alpha: 0.3)
         return cell
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        listItems.count
+        creationManager.listItems.count
     }
 
 }
@@ -153,24 +138,26 @@ extension RegularEventViewController: UITextFieldDelegate {
 
     func textFieldShouldClear(_ textField: UITextField) -> Bool {
         nameTextField.text = ""
+        creationManager.name = ""
         setCreationButtonAccessibility()
         return true
     }
 
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         nameTextField.resignFirstResponder()
+        creationManager.name = nameTextField.text ?? ""
         setCreationButtonAccessibility()
         return true
     }
 }
 
 protocol ScheduleDelegate: AnyObject {
-    func scheduleHasBeenSet(schedule: [WeekDay: Bool])
+    func scheduleHasBeenSet(schedule: [WeekDay])
 }
 
 extension RegularEventViewController: ScheduleDelegate {
-    func scheduleHasBeenSet(schedule: [WeekDay : Bool]) {
-        self.schedule = schedule
+    func scheduleHasBeenSet(schedule: [WeekDay]) {
+        creationManager.schedule = schedule
         setCreationButtonAccessibility()
         tableView.reloadData()
     }
@@ -187,6 +174,9 @@ extension RegularEventViewController {
         titleLabel.font = UIFont.systemFont(ofSize: 16, weight: .medium)
         view.addSubview(titleLabel)
 
+        scrollView.contentSize = CGSize(width: scrollView.contentSize.width, height: view.frame.height)
+        view.addSubview(scrollView)
+
         inputContainer = UIView()
         inputContainer.translatesAutoresizingMaskIntoConstraints = false
         inputContainer.backgroundColor = UIColor(red: 0.9, green: 0.91, blue: 0.92, alpha: 0.3)
@@ -202,7 +192,7 @@ extension RegularEventViewController {
         nameTextField.returnKeyType = .done
         nameTextField.enablesReturnKeyAutomatically = true
         inputContainer.addSubview(nameTextField)
-        view.addSubview(inputContainer)
+        scrollView.addSubview(inputContainer)
 
         tableView = UITableView()
         tableView.separatorStyle = .none
@@ -210,10 +200,21 @@ extension RegularEventViewController {
         tableView.layer.masksToBounds = true
         tableView.layer.cornerRadius = 16
         tableView.register(EventCreationTableViewCell.self, forCellReuseIdentifier: EventCreationTableViewCell.identifier)
-        tableView.isScrollEnabled = true
+        tableView.isScrollEnabled = false
+        tableView.bounces = false
         tableView.delegate = self
         tableView.dataSource = self
-        view.addSubview(tableView)
+        scrollView.addSubview(tableView)
+
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
+        collectionView.isScrollEnabled = false
+        collectionView.bounces = false
+        collectionView.register(EmojiCell.self, forCellWithReuseIdentifier: EmojiCell.identifier)
+        collectionView.register(ColorCell.self, forCellWithReuseIdentifier: ColorCell.identifier)
+        collectionView.register(NewTrackerSupplementaryView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: NewTrackerSupplementaryView.identifier)
+        collectionView.dataSource = self
+        collectionView.delegate = self
+        scrollView.addSubview(collectionView)
 
         cancelButton = UIButton()
         cancelButton.translatesAutoresizingMaskIntoConstraints = false
@@ -242,9 +243,15 @@ extension RegularEventViewController {
         NSLayoutConstraint.activate([
             titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 27),
             titleLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 122),
-            inputContainer.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 22),
+            scrollView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 22),
+            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            //inputContainer.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 22),
+            inputContainer.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 22),
             inputContainer.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
             inputContainer.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
+
             inputContainer.heightAnchor.constraint(equalToConstant: 75),
             nameTextField.centerYAnchor.constraint(equalTo: inputContainer.centerYAnchor),
             nameTextField.leadingAnchor.constraint(equalTo: inputContainer.leadingAnchor, constant: 16),
@@ -252,7 +259,12 @@ extension RegularEventViewController {
             tableView.topAnchor.constraint(equalTo: inputContainer.bottomAnchor, constant: 24),
             tableView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
             tableView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
+
             tableView.heightAnchor.constraint(equalToConstant: 150),
+            collectionView.topAnchor.constraint(equalTo: tableView.bottomAnchor, constant: 32),
+            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            collectionView.bottomAnchor.constraint(equalTo: cancelButton.topAnchor, constant: -16),
             cancelButton.widthAnchor.constraint(equalToConstant: 161),
             cancelButton.heightAnchor.constraint(equalToConstant: 60),
             cancelButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -21),
@@ -276,5 +288,108 @@ extension RegularEventViewController {
             separator.trailingAnchor.constraint(equalTo: cell.trailingAnchor, constant: -16),
             separator.heightAnchor.constraint(equalToConstant: 1),
         ])
+    }
+}
+
+extension RegularEventViewController: UICollectionViewDataSource {
+
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        return 2
+    }
+
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return 18
+    }
+
+    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        var id = ""
+        switch kind {
+        case UICollectionView.elementKindSectionHeader:
+            id = NewTrackerSupplementaryView.identifier
+        case UICollectionView.elementKindSectionFooter:
+            id = "footer"
+        default:
+            id = ""
+        }
+        let view = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: id, for: indexPath) as! NewTrackerSupplementaryView
+
+        if indexPath.section == 0 {
+            view.titleLabel.text = "Emoji"
+        } else {
+            view.titleLabel.text = "Цвет"
+        }
+        return view
+    }
+
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        if indexPath.section == 0 {
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: EmojiCell.identifier, for: indexPath) as? EmojiCell else {
+                return UICollectionViewCell()
+            }
+
+            cell.emojiLabel.text = creationManager.emojies[indexPath.row]
+            return cell
+        } else {
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ColorCell.identifier, for: indexPath) as? ColorCell else {
+                return UICollectionViewCell()
+            }
+
+            cell.colorContainer.backgroundColor = creationManager.colors[indexPath.row]
+            return cell
+        }
+
+    }
+
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        if indexPath.section == 0 {
+            if let selectedEmojiIndexPath = selectedEmojiIndexPath {
+                let cell = collectionView.cellForItem(at: selectedEmojiIndexPath) as! EmojiCell
+                cell.emojiContainer.backgroundColor = .white
+            }
+
+            let cell = collectionView.cellForItem(at: indexPath) as! EmojiCell
+            cell.emojiContainer.backgroundColor = UIColor(red: 0.902, green: 0.91, blue: 0.922, alpha: 1)
+            creationManager.selectedEmoji = creationManager.emojies[indexPath.row]
+            selectedEmojiIndexPath = indexPath
+        } else {
+
+            if let selectedColorIndexPath = selectedColorIndexPath {
+                let cell = collectionView.cellForItem(at: selectedColorIndexPath) as! ColorCell
+                cell.selectionContainer.layer.borderColor = UIColor.clear.cgColor
+            }
+
+            let color = creationManager.colors[indexPath.row]
+            let cell = collectionView.cellForItem(at: indexPath) as! ColorCell
+            cell.selectionContainer.layer.borderColor = color.withAlphaComponent(0.3).cgColor
+
+            creationManager.selectedColor = color
+            selectedColorIndexPath = indexPath
+        }
+        setCreationButtonAccessibility()
+        collectionView.deselectItem(at: indexPath, animated: false)
+    }
+
+}
+
+extension RegularEventViewController: UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        return 5
+    }
+
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+        return 5
+    }
+
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return CGSize(width: 52, height: 52)
+    }
+
+
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+        return CGSize(width: collectionView.frame.width, height: 18)
+    }
+
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        UIEdgeInsets(top: 30, left: 0, bottom: 0, right: 0)
     }
 }

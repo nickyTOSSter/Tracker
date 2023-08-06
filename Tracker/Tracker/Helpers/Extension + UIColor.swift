@@ -55,5 +55,4 @@ extension UIColor {
     static var emeraldLight: UIColor {
         UIColor(named: "emeraldLight")!
     }
-
 }
