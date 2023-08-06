@@ -13,6 +13,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return container
     }()
 
+    lazy var trackersTabBarController: UITabBarController = {
+        let trackerlistViewController = TrackersViewController()
+        trackerlistViewController.tabBarItem = UITabBarItem(title: "Трекеры", image: UIImage(named: "tabBar_trackers"), tag: 0)
+
+        let statisticViewController = StatisticViewController()
+        statisticViewController.tabBarItem = UITabBarItem(title: "Статистика", image: UIImage(named: "tabBar_statistic"), tag: 0)
+
+        let tabBarController = UITabBarController()
+        tabBarController.viewControllers = [
+            UINavigationController(rootViewController: trackerlistViewController),
+            UINavigationController(rootViewController: statisticViewController)
+        ]
+        return tabBarController
+    }()
+
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         return true
     }

@@ -199,9 +199,3 @@ extension CategoryViewController: NewCategoryViewControllerDelegate {
 protocol CategoryViewControllerDelegate: AnyObject {
     func categoryDidSelect(_ category: TrackerCategory)
 }
-
-//extension CategoryViewController: StoreDelegate {
-//    func didUpdate() {
-//        tableView.reloadData()
-//    }
-//}
