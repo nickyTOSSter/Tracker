@@ -13,6 +13,7 @@
 		4F9042A92A6C09EB009BCF79 /* CategoryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F9042A82A6C09EB009BCF79 /* CategoryStore.swift */; };
 		4F9042AB2A6C0A1D009BCF79 /* StoreDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F9042AA2A6C0A1D009BCF79 /* StoreDelegate.swift */; };
 		4F9A586F2A0D5AA4002F5382 /* TrackerCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F9A586E2A0D5AA4002F5382 /* TrackerCollectionViewCell.swift */; };
+		4FA14AF72A7F77FB00470531 /* CategoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FA14AF62A7F77FB00470531 /* CategoryViewModel.swift */; };
 		4FAE2AF12A7511EA0016707E /* TrackerDataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 4FAE2AEF2A7511EA0016707E /* TrackerDataModel.xcdatamodeld */; };
 		4FAE2AF52A7519C50016707E /* ColorMarshall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FAE2AF42A7519C50016707E /* ColorMarshall.swift */; };
 		4FAE2AF72A7520C20016707E /* TrackerStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FAE2AF62A7520C20016707E /* TrackerStore.swift */; };
@@ -47,6 +48,7 @@
 		4F9042A82A6C09EB009BCF79 /* CategoryStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryStore.swift; sourceTree = "<group>"; };
 		4F9042AA2A6C0A1D009BCF79 /* StoreDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreDelegate.swift; sourceTree = "<group>"; };
 		4F9A586E2A0D5AA4002F5382 /* TrackerCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackerCollectionViewCell.swift; sourceTree = "<group>"; };
+		4FA14AF62A7F77FB00470531 /* CategoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryViewModel.swift; sourceTree = "<group>"; };
 		4FAE2AF02A7511EA0016707E /* TrackerDataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = TrackerDataModel.xcdatamodel; sourceTree = "<group>"; };
 		4FAE2AF42A7519C50016707E /* ColorMarshall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorMarshall.swift; sourceTree = "<group>"; };
 		4FAE2AF62A7520C20016707E /* TrackerStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackerStore.swift; sourceTree = "<group>"; };
@@ -94,6 +96,14 @@
 				4FAE2AF42A7519C50016707E /* ColorMarshall.swift */,
 			);
 			path = Helpers;
+			sourceTree = "<group>";
+		};
+		4FA14AF52A7F77C500470531 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				4FA14AF62A7F77FB00470531 /* CategoryViewModel.swift */,
+			);
+			path = ViewModel;
 			sourceTree = "<group>";
 		};
 		4FAE2AFA2A76A1030016707E /* Trackers */ = {
@@ -193,6 +203,7 @@
 		4FCA39DE2A0FD34100A67D3A /* Tracker */ = {
 			isa = PBXGroup;
 			children = (
+				4FA14AF52A7F77C500470531 /* ViewModel */,
 				4FC7D2212A642A9E00635081 /* CoreData */,
 				4FB838C22A519A9800FE6DEE /* Controllers */,
 				4FB838C02A519A1800FE6DEE /* Model */,
@@ -322,6 +333,7 @@
 				4FD6BD742A6409B500588C87 /* NewCategoryViewController.swift in Sources */,
 				4FBEA4EF2A3A47260096F24F /* ColorCell.swift in Sources */,
 				4FCEAFC52A09360000911CE9 /* StatisticViewController.swift in Sources */,
+				4FA14AF72A7F77FB00470531 /* CategoryViewModel.swift in Sources */,
 				4FB4DB262A251F3C00E0F997 /* RegularEventViewController.swift in Sources */,
 				4F03EB2F2A0D54C900590C0A /* Extension + UIColor.swift in Sources */,
 				4F9042A92A6C09EB009BCF79 /* CategoryStore.swift in Sources */,
