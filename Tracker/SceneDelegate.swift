@@ -22,7 +22,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             UINavigationController(rootViewController: statisticViewController)
         ]
 
-        window?.rootViewController = tabBarController
+         let onboardingViewController = OnboardingViewController(
+            transitionStyle: .scroll,
+            navigationOrientation: .horizontal
+        )
+
+        window?.rootViewController = onboardingViewController
         window?.makeKeyAndVisible()
     }
 

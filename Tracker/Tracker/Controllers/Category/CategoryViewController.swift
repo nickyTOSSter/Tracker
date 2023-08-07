@@ -10,15 +10,32 @@ class CategoryViewController: UIViewController {
     private var messageLabel: UILabel!
 
     weak var delegate: CategoryViewControllerDelegate?
-    private var categoryStore: CategoryStore?
+    private var viewModel: CategoryViewModel?
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        categoryStore = CategoryStore(delegate: self)
         view.backgroundColor = .white
         setupViews()
         setupConstraints()
-        setupStubImageVisibility()
+
+        viewModel = CategoryViewModel()
+        bind()
+     }
+
+    private func bind() {
+        guard let viewModel = viewModel else { return }
+
+        viewModel.$categoryIsEmpty.bind { [weak self] newValue in
+            guard let self = self else { return }
+            self.setupStubImageVisibility(newValue)
+        }
+
+        viewModel.$numberOfRowsInSection.bind { [weak self] _ in
+            guard let self = self else { return }
+            self.tableView.reloadData()
+        }
+
+        viewModel.initialize()
     }
 
     @objc private func addButtonTapped() {
@@ -94,9 +111,9 @@ extension CategoryViewController {
 
     }
 
-    private func setupStubImageVisibility() {
-        imageView.isHidden = !categoryStore!.isEmpty()
-        messageLabel.isHidden = !categoryStore!.isEmpty()
+    private func setupStubImageVisibility(_ isEmpty: Bool) {
+        imageView.isHidden = isEmpty == false
+        messageLabel.isHidden = isEmpty == false
     }
 
     private func addSeparator(for cell: UITableViewCell) {
@@ -119,11 +136,16 @@ extension CategoryViewController {
 extension CategoryViewController: UITableViewDataSource, UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        categoryStore!.numberOfRowsInSection()
+        guard let viewModel = viewModel else { return 0 }
+        return viewModel.numberOfRowsInSection
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let category = categoryStore!.object(at: indexPath) else { return UITableViewCell() }
+        guard let viewModel = viewModel,
+              let category = viewModel.object(at: indexPath) else {
+            return UITableViewCell()
+        }
+
         let cell = tableView.dequeueReusableCell(withIdentifier: CategoryCell.identifier, for: indexPath) as! CategoryCell
 
         cell.title.text = category.name
@@ -131,7 +153,7 @@ extension CategoryViewController: UITableViewDataSource, UITableViewDelegate {
             addSeparator(for: cell)
         }
 
-        if indexPath.row == categoryStore!.numberOfRowsInSection() - 1 {
+        if indexPath.row == viewModel.numberOfRowsInSection - 1 {
             cell.layer.masksToBounds = true
             cell.layer.cornerRadius = 16
             cell.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
@@ -148,7 +170,10 @@ extension CategoryViewController: UITableViewDataSource, UITableViewDelegate {
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        guard let category = categoryStore!.object(at: indexPath) else { return }
+        guard let viewModel = viewModel,
+              let category = viewModel.object(at: indexPath) else {
+            return
+        }
 
         let cell = tableView.cellForRow(at: indexPath) as! CategoryCell
         cell.checkImageView.isHidden.toggle()
@@ -165,17 +190,12 @@ extension CategoryViewController: UITableViewDataSource, UITableViewDelegate {
 //MARK: - CategoryCreation
 extension CategoryViewController: NewCategoryViewControllerDelegate {
     func categoryWasCreated(_ category: TrackerCategory) {
-        categoryStore!.add(category)
+        guard let viewModel = viewModel else { return }
+        viewModel.add(category)
     }
 }
 
 // MARK: - Protocols
 protocol CategoryViewControllerDelegate: AnyObject {
     func categoryDidSelect(_ category: TrackerCategory)
-}
-
-extension CategoryViewController: StoreDelegate {
-    func didUpdate() {
-        tableView.reloadData()
-    }
 }
