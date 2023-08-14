@@ -1,5 +1,6 @@
 import UIKit
 import CoreData
+import YandexMobileMetrica
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -15,10 +16,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     lazy var trackersTabBarController: UITabBarController = {
         let trackerlistViewController = TrackersViewController()
-        trackerlistViewController.tabBarItem = UITabBarItem(title: "Трекеры", image: UIImage(named: "tabBar_trackers"), tag: 0)
+        trackerlistViewController.tabBarItem = UITabBarItem(title: NSLocalizedString("trackers", comment: "Trackers tab bar"), image: UIImage(named: "tabBar_trackers"), tag: 0)
 
         let statisticViewController = StatisticViewController()
-        statisticViewController.tabBarItem = UITabBarItem(title: "Статистика", image: UIImage(named: "tabBar_statistic"), tag: 0)
+        statisticViewController.tabBarItem = UITabBarItem(title: NSLocalizedString("trackers.tabBar.right", comment: "Statistics tab bar"), image: UIImage(named: "tabBar_statistic"), tag: 0)
 
         let tabBarController = UITabBarController()
         tabBarController.viewControllers = [
@@ -29,6 +30,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }()
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        guard let configuration = YMMYandexMetricaConfiguration(apiKey: "bd9997ef-de33-4a68-b7da-54be4633b18e") else { 
+            return true
+        }
+
+        YMMYandexMetrica.activate(with: configuration)
         return true
     }
 

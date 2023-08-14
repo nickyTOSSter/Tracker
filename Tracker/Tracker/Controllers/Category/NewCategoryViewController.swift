@@ -58,7 +58,7 @@ extension NewCategoryViewController {
     private func setupViews() {
         titleLabel = UILabel()
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
-        titleLabel.text = "Новая категория"
+        titleLabel.text = NSLocalizedString("category.new.title", comment: "Category creation view controller title")
         titleLabel.font = UIFont.systemFont(ofSize: 16, weight: .medium)
         view.addSubview(titleLabel)
 
@@ -71,7 +71,7 @@ extension NewCategoryViewController {
 
         nameTextField = UITextField()
         nameTextField.translatesAutoresizingMaskIntoConstraints = false
-        nameTextField.placeholder = "Введите название категории"
+        nameTextField.placeholder = NSLocalizedString("category.new.placeholder", comment: "Category name textfield placeholder")
         nameTextField.clearButtonMode = .whileEditing
         nameTextField.delegate = self
         nameTextField.returnKeyType = .done
@@ -82,7 +82,7 @@ extension NewCategoryViewController {
 
         createButton = UIButton()
         createButton.translatesAutoresizingMaskIntoConstraints = false
-        createButton.setTitle("Готово", for: .normal)
+        createButton.setTitle(NSLocalizedString("done", comment: "Done button title"), for: .normal)
         createButton.setTitleColor(.white, for: .normal)
         createButton.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
         createButton.backgroundColor = .black

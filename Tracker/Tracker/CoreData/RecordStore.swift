@@ -46,6 +46,7 @@ final class RecordStore: NSObject {
         try! context.save()
     }
 
+
     func object(by trackerId: UUID, and currentDate: Date) -> TrackerRecord? {
         let datePredicate = NSPredicate(format: "completionDate == %@", currentDate as CVarArg)
         let trackerIdPredicate = NSPredicate(format: "trackerId == %@", trackerId as CVarArg)
@@ -89,6 +90,16 @@ final class RecordStore: NSObject {
 
         return recordManagedObjects.count
     }
+
+    func trackersCompleted() -> Int {
+        guard let managedObjects = fetchedResultController.fetchedObjects else { return 0 }
+        return managedObjects.count
+    }
+
+    func isEmpty() -> Bool {
+        return trackersCompleted() == 0
+    }
+
 
 }
 

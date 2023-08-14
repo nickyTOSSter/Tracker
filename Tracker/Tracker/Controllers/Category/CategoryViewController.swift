@@ -52,7 +52,7 @@ extension CategoryViewController {
     private func setupViews() {
         titleLabel = UILabel()
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
-        titleLabel.text = "Категория"
+        titleLabel.text = NSLocalizedString("category", comment: "Category view controller title")
         titleLabel.font = UIFont.systemFont(ofSize: 16, weight: .medium)
         view.addSubview(titleLabel)
 
@@ -75,13 +75,13 @@ extension CategoryViewController {
         paragraphStyle.lineHeightMultiple = 1.26
         paragraphStyle.alignment = .center
         messageLabel.textAlignment = .center
-        messageLabel.attributedText = NSMutableAttributedString(string: "Привычки и события можно  объединить по смыслу", attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
+        messageLabel.attributedText = NSMutableAttributedString(string: NSLocalizedString("category.emptyList", comment: "Category empty list message"), attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
         messageLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(messageLabel)
 
         addButton = UIButton()
         addButton.translatesAutoresizingMaskIntoConstraints = false
-        addButton.setTitle("Добавить категорию", for: .normal)
+        addButton.setTitle(NSLocalizedString("category.create", comment: "Category creation button title"), for: .normal)
         addButton.setTitleColor(.white, for: .normal)
         addButton.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
         addButton.backgroundColor = .black
