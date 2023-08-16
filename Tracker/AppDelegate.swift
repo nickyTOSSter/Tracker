@@ -30,11 +30,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }()
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        guard let configuration = YMMYandexMetricaConfiguration(apiKey: "bd9997ef-de33-4a68-b7da-54be4633b18e") else { 
-            return true
+        if let configuration = YMMYandexMetricaConfiguration(apiKey: "bd9997ef-de33-4a68-b7da-54be4633b18e") {
+            YMMYandexMetrica.activate(with: configuration)
         }
 
-        YMMYandexMetrica.activate(with: configuration)
         return true
     }
 

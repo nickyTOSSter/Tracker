@@ -52,7 +52,11 @@ final class TrackerStore: NSObject {
 
         let trackerManagedObject = convert(tracker: tracker)
         categoryManagedObject.addToTrackers(trackerManagedObject)
-        try! context.save()
+        do {
+            try context.save()
+        } catch {
+            print("failed to add tracker")
+        }
     }
 
     func edit(_ tracker: Tracker, to category: TrackerCategory) {
@@ -68,7 +72,11 @@ final class TrackerStore: NSObject {
         trackerManagedObject.isPinned = tracker.isPinned
         trackerManagedObject.category = categoryManagedObject
 
-        try! context.save()
+        do {
+            try context.save()
+        } catch {
+            print("failed to save edited tracker")
+        }
     }
 
 
@@ -94,14 +102,22 @@ final class TrackerStore: NSObject {
             context.delete(object)
         }
 
-        try! context.save()
+        do {
+            try context.save()
+        } catch {
+            print("failed to delete tracker")
+        }
     }
 
     func toggleTrackerPin(at indexPath: IndexPath) {
         guard let pinnedTrackers = pinnedTrackersFetchedResultController.fetchedObjects, !pinnedTrackers.isEmpty else {
             let managedObject = fetchedResultController.object(at: indexPath)
             managedObject.isPinned.toggle()
-            try! context.save()
+            do {
+                try context.save()
+            } catch {
+                print("failed to save toggle pin")
+            }
             return
         }
 
@@ -113,7 +129,11 @@ final class TrackerStore: NSObject {
             managedObject.isPinned.toggle()
         }
 
-        try! context.save()
+        do {
+            try context.save()
+        } catch {
+            print("failed to save toggle pin")
+        }
     }
 
 

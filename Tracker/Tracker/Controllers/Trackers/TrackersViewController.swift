@@ -286,13 +286,10 @@ extension TrackersViewController: UICollectionViewDelegateFlowLayout {
             return UIContextMenuConfiguration()
         }
 
-        var toggleTrackerPinActionTitle = ""
-        switch isPinned {
-        case true:
-            toggleTrackerPinActionTitle = NSLocalizedString("unpin", comment: "Title for pinned tracker")
-        case false:
-            toggleTrackerPinActionTitle = NSLocalizedString("pin", comment: "Title for unpinned tracker")
-        }
+        var toggleTrackerPinActionTitle = isPinned
+            ? NSLocalizedString("unpin", comment: "Title for pinned tracker")
+            : NSLocalizedString("pin", comment: "Title for unpinned tracker")
+
         let toggleTrackerPinAction = UIAction(title: toggleTrackerPinActionTitle) { [weak self] _ in
             self?.toggleTrackerPin(at: indexPath)
         }
