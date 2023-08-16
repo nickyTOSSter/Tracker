@@ -35,38 +35,38 @@ enum WeekDay: Int {
     func description() -> String {
         switch self {
         case .monday:
-            return "Понедельник"
+            return NSLocalizedString("monday", comment: "monday")
         case .tuesday:
-            return "Вторник"
+            return NSLocalizedString("tuesday", comment: "tuesday")
         case .wednesday:
-            return "Среда"
+            return NSLocalizedString("wednesday", comment: "wednesday")
         case .thursday:
-            return "Четверг"
+            return NSLocalizedString("thursday", comment: "thursday")
         case .friday:
-            return "Пятница"
+            return NSLocalizedString("friday", comment: "friday")
         case .saturday:
-            return "Суббота"
+            return NSLocalizedString("saturday", comment: "saturday")
         case .sunday:
-            return "Воскресенье"
+            return NSLocalizedString("sunday", comment: "sunday")
         }
     }
 
     func shortDescription() -> String {
         switch self {
         case .monday:
-            return "Пн"
+            return NSLocalizedString("mondayShort", comment: "monday short form")
         case .tuesday:
-            return "Вт"
+            return NSLocalizedString("tuesdayShort", comment: "tuesday short form")
         case .wednesday:
-            return "Ср"
+            return NSLocalizedString("wednesdayShort", comment: "wednesday short form")
         case .thursday:
-            return "Чт"
+            return NSLocalizedString("thursdayShort", comment: "thursday short form")
         case .friday:
-            return "Пт"
+            return NSLocalizedString("fridayShort", comment: "friday short form")
         case .saturday:
-            return "Сб"
+            return NSLocalizedString("saturdayShort", comment: "saturday short form")
         case .sunday:
-            return "Вс"
+            return NSLocalizedString("sundayShort", comment: "sunday short form")
         }
 
     }

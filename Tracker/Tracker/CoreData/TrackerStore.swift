@@ -5,8 +5,9 @@ final class TrackerStore: NSObject {
     private let context: NSManagedObjectContext
     private weak var delegate: StoreDelegate?
 
-     private lazy var fetchedResultController: NSFetchedResultsController<TrackerCoreData> = {
+    private lazy var fetchedResultController: NSFetchedResultsController<TrackerCoreData> = {
         let request = TrackerCoreData.fetchRequest()
+        request.predicate = NSPredicate(format: "isPinned == NO")
         request.sortDescriptors = [NSSortDescriptor(key: "category.name", ascending: true)]
 
         let fetchedResultController = NSFetchedResultsController(
@@ -16,10 +17,28 @@ final class TrackerStore: NSObject {
             cacheName: nil
         )
         fetchedResultController.delegate = self
-         
+
         try? fetchedResultController.performFetch()
         return fetchedResultController
     }()
+
+    private lazy var pinnedTrackersFetchedResultController: NSFetchedResultsController<TrackerCoreData> = {
+        let request = TrackerCoreData.fetchRequest()
+        request.predicate = NSPredicate(format: "isPinned == YES")
+        request.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
+
+        let fetchedResultController = NSFetchedResultsController(
+            fetchRequest: request,
+            managedObjectContext: context,
+            sectionNameKeyPath: nil,
+            cacheName: nil
+        )
+        fetchedResultController.delegate = self
+
+        try? fetchedResultController.performFetch()
+        return fetchedResultController
+    }()
+
 
     init(delegate: StoreDelegate) {
         self.context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
@@ -33,29 +52,160 @@ final class TrackerStore: NSObject {
 
         let trackerManagedObject = convert(tracker: tracker)
         categoryManagedObject.addToTrackers(trackerManagedObject)
-        try! context.save()
+        do {
+            try context.save()
+        } catch {
+            print("failed to add tracker")
+        }
     }
+
+    func edit(_ tracker: Tracker, to category: TrackerCategory) {
+        guard let categoryManagedObject = categoryManagedObject(by: category.id),
+            let trackerManagedObject = trackerManagedObject(by: tracker.id) else {
+            return
+        }
+
+        trackerManagedObject.name = tracker.name
+        trackerManagedObject.emoji = tracker.emoji
+        trackerManagedObject.color = ColorMarshall.shared.encode(color: tracker.color)
+        trackerManagedObject.schedule = WeekDay.encode(weekDays: tracker.schedule)
+        trackerManagedObject.isPinned = tracker.isPinned
+        trackerManagedObject.category = categoryManagedObject
+
+        do {
+            try context.save()
+        } catch {
+            print("failed to save edited tracker")
+        }
+    }
+
+
+    func delete(at indexPath: IndexPath) {
+
+        guard let managedObject = managedObject(at: indexPath), let trackerId = managedObject.id else {
+            return
+        }
+
+        context.delete(managedObject)
+        try! context.save()
+
+        let request = RecordCoreData.fetchRequest()
+        request.resultType = .managedObjectResultType
+        let trackerIdPredicate = NSPredicate(format: "trackerId == %@", trackerId as CVarArg)
+        request.predicate = NSCompoundPredicate(type: .and, subpredicates: [trackerIdPredicate])
+
+        guard let recordObjects = try? context.fetch(request) else {
+            return
+        }
+
+        for object in recordObjects {
+            context.delete(object)
+        }
+
+        do {
+            try context.save()
+        } catch {
+            print("failed to delete tracker")
+        }
+    }
+
+    func toggleTrackerPin(at indexPath: IndexPath) {
+        guard let pinnedTrackers = pinnedTrackersFetchedResultController.fetchedObjects, !pinnedTrackers.isEmpty else {
+            let managedObject = fetchedResultController.object(at: indexPath)
+            managedObject.isPinned.toggle()
+            do {
+                try context.save()
+            } catch {
+                print("failed to save toggle pin")
+            }
+            return
+        }
+
+        if indexPath.section == 0 {
+            let managedObject = pinnedTrackersFetchedResultController.object(at: indexPath)
+            managedObject.isPinned.toggle()
+        } else {
+            let managedObject = fetchedResultController.object(at: IndexPath(item: indexPath.item, section: indexPath.section - 1))
+            managedObject.isPinned.toggle()
+        }
+
+        do {
+            try context.save()
+        } catch {
+            print("failed to save toggle pin")
+        }
+    }
+
 
     func object(at indexPath: IndexPath) -> Tracker? {
-        let managedObject = fetchedResultController.object(at: indexPath)
-        return convert(managedObject: managedObject)
+        guard let pinnedTrackers = pinnedTrackersFetchedResultController.fetchedObjects, !pinnedTrackers.isEmpty else {
+            let managedObject = fetchedResultController.object(at: indexPath)
+            return convert(managedObject: managedObject)
+        }
+
+        if indexPath.section == 0 {
+            let managedObject = pinnedTrackersFetchedResultController.object(at: indexPath)
+            return convert(managedObject: managedObject)
+        } else {
+            let managedObject = fetchedResultController.object(at: IndexPath(item: indexPath.item, section: indexPath.section - 1))
+            return convert(managedObject: managedObject)
+        }
     }
 
+    func category(at indexPath: IndexPath) -> TrackerCategory? {
+        guard let pinnedTrackers = pinnedTrackersFetchedResultController.fetchedObjects, !pinnedTrackers.isEmpty else {
+            let managedObject = fetchedResultController.object(at: indexPath)
+            return convert(managedObject: managedObject.category!)
+        }
+
+        if indexPath.section == 0 {
+            let managedObject = pinnedTrackersFetchedResultController.object(at: indexPath)
+            return convert(managedObject: managedObject.category!)
+        } else {
+            let managedObject = fetchedResultController.object(at: IndexPath(item: indexPath.item, section: indexPath.section - 1))
+            return convert(managedObject: managedObject.category!)
+        }
+    }
+
+
     func managedObject(at indexPath: IndexPath) -> TrackerCoreData? {
-        let managedObject = fetchedResultController.object(at: indexPath)
-        return managedObject
+        guard let pinnedTrackers = pinnedTrackersFetchedResultController.fetchedObjects, !pinnedTrackers.isEmpty else {
+            return fetchedResultController.object(at: indexPath)
+        }
+
+        if indexPath.section == 0 {
+            return pinnedTrackersFetchedResultController.object(at: indexPath)
+        } else {
+            return fetchedResultController.object(at: IndexPath(item: indexPath.item, section: indexPath.section - 1))
+        }
     }
 
     func isEmpty() -> Bool {
-        fetchedResultController.sections?.isEmpty ?? true
+        guard let pinnedTrackers = pinnedTrackersFetchedResultController.fetchedObjects, let trackersIsEmpty = fetchedResultController.sections?.isEmpty else {
+            return true
+        }
+
+        return trackersIsEmpty && pinnedTrackers.isEmpty
     }
 
     func numberOfSections() -> Int {
-        return fetchedResultController.sections?.count ?? 0
+        guard let pinnedTrackers = pinnedTrackersFetchedResultController.fetchedObjects, !pinnedTrackers.isEmpty else {
+            return fetchedResultController.sections?.count ?? 0
+        }
+
+        return (fetchedResultController.sections?.count ?? 0) + 1
     }
 
     func numberOfRowsInSection(_ section: Int) -> Int {
-        return fetchedResultController.sections?[section].numberOfObjects ?? 0
+        guard let pinnedTrackers = pinnedTrackersFetchedResultController.fetchedObjects, !pinnedTrackers.isEmpty else {
+            return fetchedResultController.sections?[section].numberOfObjects ?? 0
+        }
+
+        if section == 0 {
+            return pinnedTrackers.count
+        } else {
+            return fetchedResultController.sections?[section - 1].numberOfObjects ?? 0
+        }
     }
 
     private func convert(tracker: Tracker) -> TrackerCoreData {
@@ -65,15 +215,16 @@ final class TrackerStore: NSObject {
         managedObject.emoji = tracker.emoji
         managedObject.color = ColorMarshall.shared.encode(color: tracker.color)
         managedObject.schedule = WeekDay.encode(weekDays: tracker.schedule)
+        managedObject.isPinned = tracker.isPinned
         return managedObject
     }
 
     private func convert(managedObject: TrackerCoreData) -> Tracker? {
         guard let id = managedObject.id,
-            let name = managedObject.name,
-            let emoji = managedObject.emoji,
-            let color = managedObject.color,
-            let scheduleString = managedObject.schedule else {
+              let name = managedObject.name,
+              let emoji = managedObject.emoji,
+              let color = managedObject.color,
+              let scheduleString = managedObject.schedule else {
             return nil
         }
 
@@ -82,14 +233,15 @@ final class TrackerStore: NSObject {
             name: name,
             color: ColorMarshall.shared.decode(hexColor: color),
             emoji: emoji,
-            schedule: WeekDay.decode(weekDays: scheduleString)
+            schedule: WeekDay.decode(weekDays: scheduleString),
+            isPinned: managedObject.isPinned
         )
     }
 
     private func convert(managedObject: CategoryCoreData) -> TrackerCategory? {
         guard let id = managedObject.id,
-            let name = managedObject.name,
-            let trackerManagedObjects = managedObject.trackers?.array as? [TrackerCoreData] else {
+              let name = managedObject.name,
+              let trackerManagedObjects = managedObject.trackers?.array as? [TrackerCoreData] else {
             return nil
         }
 
@@ -107,17 +259,30 @@ final class TrackerStore: NSObject {
         return try? context.fetch(request).first
     }
 
-    func category(at indexPath: IndexPath) -> TrackerCategory? {
-        guard let trackerManagedObject = managedObject(at: indexPath),
-            let categoryManagedObject = trackerManagedObject.category else {
-            return nil
+    private func trackerManagedObject(by id: UUID) -> TrackerCoreData? {
+        let request = TrackerCoreData.fetchRequest()
+        request.predicate = NSPredicate(format: "id == %@", id as CVarArg)
+        return try? context.fetch(request).first
+    }
+
+
+    func sectionName(at indexPath: IndexPath) -> String {
+
+        guard let pinnedTrackers = pinnedTrackersFetchedResultController.fetchedObjects, !pinnedTrackers.isEmpty else {
+            return fetchedResultController.sections?[indexPath.section].name ?? ""
         }
 
-        return convert(managedObject: categoryManagedObject)
+        if indexPath.section == 0 {
+            return "Закрепленные"
+        } else {
+            return fetchedResultController.sections?[indexPath.section - 1].name ?? ""
+        }
+
     }
 
     func filter(by date: Date, and searchText: String) {
         var predicates: [NSPredicate] = []
+        predicates.append(NSPredicate(format: "isPinned == NO"))
         let weekDay = WeekDay.weekDay(from: date)
         predicates.append(NSPredicate(format: "%K CONTAINS[cd] %@", "schedule", String(weekDay.rawValue)))
         if searchText.isEmpty == false {

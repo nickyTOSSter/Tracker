@@ -80,7 +80,8 @@ final class CategoryStore: NSObject {
             name: name,
             color: ColorMarshall.shared.decode(hexColor: color),
             emoji: emoji,
-            schedule: WeekDay.decode(weekDays: scheduleString)
+            schedule: WeekDay.decode(weekDays: scheduleString),
+            isPinned: managedObject.isPinned
         )
     }
 }

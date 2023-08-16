@@ -23,7 +23,7 @@ class ScheduleViewController: UIViewController {
     private func setupViews() {
         titleLabel = UILabel()
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
-        titleLabel.text = "Расписание"
+        titleLabel.text = NSLocalizedString("schedule", comment: "Schedule view controller title")
         titleLabel.font = UIFont.systemFont(ofSize: 16, weight: .medium)
         view.addSubview(titleLabel)
 
@@ -40,7 +40,7 @@ class ScheduleViewController: UIViewController {
 
         confirmButton = UIButton()
         confirmButton.translatesAutoresizingMaskIntoConstraints = false
-        confirmButton.setTitle("Готово", for: .normal)
+        confirmButton.setTitle(NSLocalizedString("done", comment: "Done button title"), for: .normal)
         confirmButton.setTitleColor(.white, for: .normal)
         confirmButton.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
         confirmButton.backgroundColor = .black

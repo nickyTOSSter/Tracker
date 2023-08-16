@@ -9,7 +9,7 @@ class TrackerTypeSelectionViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
+        view.backgroundColor = UIColor(named: "white")
         setupViews()
         setupConstraits()
     }
@@ -32,12 +32,14 @@ extension TrackerTypeSelectionViewController {
     private func setupViews() {
         titleLabel = UILabel()
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
-        titleLabel.text = "Создание трекера"
+        titleLabel.text = NSLocalizedString("typeSelection.title", comment: "Tracker type selection title")
         titleLabel.font = UIFont.systemFont(ofSize: 16, weight: .medium)
         view.addSubview(titleLabel)
-        addRegularEvent = createButton(title: "Привычка", action: #selector(addRegularEventDidTap))
+        addRegularEvent = createButton(title: NSLocalizedString("typeSelection.habitButton", comment: "Habit button"), action: #selector(addRegularEventDidTap))
+        addRegularEvent.setTitleColor(UIColor(named: "white"), for: .normal)
         view.addSubview(addRegularEvent)
-        addNonregularEvent = createButton(title: "Нерегулярное событие", action: #selector(addNonregularEventDidTap))
+        addNonregularEvent = createButton(title: NSLocalizedString("typeSelection.eventButton", comment: "Irregular event button"), action: #selector(addNonregularEventDidTap))
+        addNonregularEvent.setTitleColor(UIColor(named: "white"), for: .normal)
         view.addSubview(addNonregularEvent)
     }
 

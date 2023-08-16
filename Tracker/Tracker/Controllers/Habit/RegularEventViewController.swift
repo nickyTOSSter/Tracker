@@ -11,6 +11,7 @@ class RegularEventViewController: UIViewController {
             frame: .zero,
             collectionViewLayout: UICollectionViewFlowLayout()
         )
+        collectionView.backgroundColor = UIColor(named: "white")
         collectionView.register(EmojiCell.self, forCellWithReuseIdentifier: EmojiCell.identifier)
         collectionView.register(NewTrackerSupplementaryView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: NewTrackerSupplementaryView.identifier)
         return collectionView
@@ -18,6 +19,7 @@ class RegularEventViewController: UIViewController {
 
     private lazy var scrollView: UIScrollView = {
         let scrollView = UIScrollView()
+        scrollView.backgroundColor = UIColor(named: "white")
         scrollView.keyboardDismissMode = .onDrag
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         return scrollView
@@ -170,7 +172,7 @@ extension RegularEventViewController {
 
         titleLabel = UILabel()
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
-        titleLabel.text = "Новая привычка"
+        titleLabel.text = NSLocalizedString("creation.habit.title", comment: "Title of habit creation view controller")
         titleLabel.font = UIFont.systemFont(ofSize: 16, weight: .medium)
         view.addSubview(titleLabel)
 
@@ -186,7 +188,7 @@ extension RegularEventViewController {
 
         nameTextField = UITextField()
         nameTextField.translatesAutoresizingMaskIntoConstraints = false
-        nameTextField.placeholder = "Введите название трекера"
+        nameTextField.placeholder = NSLocalizedString("creation.placeholder", comment: "Tracker name textfield placeholder")
         nameTextField.clearButtonMode = .whileEditing
         nameTextField.delegate = self
         nameTextField.returnKeyType = .done
@@ -219,7 +221,7 @@ extension RegularEventViewController {
         cancelButton = UIButton()
         cancelButton.translatesAutoresizingMaskIntoConstraints = false
         cancelButton.addTarget(self, action: #selector(cancelButtonTapped), for: .touchUpInside)
-        cancelButton.setTitle("Отменить", for: .normal)
+        cancelButton.setTitle(NSLocalizedString("creation.cancel", comment: "Cancel button title"), for: .normal)
         cancelButton.setTitleColor(UIColor(red: 0.961, green: 0.42, blue: 0.424, alpha: 1), for: .normal)
         cancelButton.layer.masksToBounds = true
         cancelButton.layer.cornerRadius = 16
@@ -230,7 +232,7 @@ extension RegularEventViewController {
         createButton = UIButton()
         createButton.translatesAutoresizingMaskIntoConstraints = false
         createButton.addTarget(self, action: #selector(createButtonTapped), for: .touchUpInside)
-        createButton.setTitle("Создать", for: .normal)
+        createButton.setTitle(NSLocalizedString("creation.create", comment: "Creation button title"), for: .normal)
         createButton.setTitleColor(.white, for: .normal)
         setCreationButtonAccessibility()
         createButton.layer.masksToBounds = true
@@ -247,7 +249,6 @@ extension RegularEventViewController {
             scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            //inputContainer.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 22),
             inputContainer.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 22),
             inputContainer.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
             inputContainer.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
@@ -314,9 +315,9 @@ extension RegularEventViewController: UICollectionViewDataSource {
         let view = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: id, for: indexPath) as! NewTrackerSupplementaryView
 
         if indexPath.section == 0 {
-            view.titleLabel.text = "Emoji"
+            view.titleLabel.text = NSLocalizedString("creation.emoji", comment: "Emoji collection title")
         } else {
-            view.titleLabel.text = "Цвет"
+            view.titleLabel.text = NSLocalizedString("creation.color", comment: "Color collection title")
         }
         return view
     }

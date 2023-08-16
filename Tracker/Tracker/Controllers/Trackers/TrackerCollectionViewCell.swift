@@ -11,6 +11,12 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
     let completeButton = UIButton()
     weak var delegate: TrackerCellDelegate?
     var indexPath: IndexPath?
+    let isPinnedViewContainer = UIView()
+    let isPinnedImageView: UIImageView = {
+        let imageView = UIImageView(image: UIImage(named: "isPinned"))
+        return imageView
+    }()
+
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -33,6 +39,7 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
         card.translatesAutoresizingMaskIntoConstraints = false
 
         setupEmoji()
+        setupIsPinned()
         setupDescription()
 
         card.layer.masksToBounds = true
@@ -54,6 +61,16 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
         emojiViewContainer.addSubview(emojiLabel)
         card.addSubview(emojiViewContainer)
     }
+
+    private func setupIsPinned() {
+        isPinnedViewContainer.translatesAutoresizingMaskIntoConstraints = false
+        isPinnedImageView.translatesAutoresizingMaskIntoConstraints = false
+
+
+        isPinnedViewContainer.addSubview(isPinnedImageView)
+        card.addSubview(isPinnedViewContainer)
+    }
+
 
     private func setupDescription() {
         descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -103,6 +120,17 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
             descriptionLabel.topAnchor.constraint(equalTo: emojiViewContainer.bottomAnchor, constant: 8),
             descriptionLabel.leadingAnchor.constraint(equalTo: card.leadingAnchor, constant: 12),
             descriptionLabel.trailingAnchor.constraint(equalTo: card.trailingAnchor, constant: -12),
+
+            isPinnedViewContainer.topAnchor.constraint(equalTo: card.topAnchor, constant: 12),
+            isPinnedViewContainer.trailingAnchor.constraint(equalTo: card.trailingAnchor, constant: -12),
+            isPinnedViewContainer.widthAnchor.constraint(equalToConstant: 24),
+            isPinnedViewContainer.heightAnchor.constraint(equalToConstant: 24),
+
+            isPinnedImageView.centerXAnchor.constraint(equalTo: isPinnedViewContainer.centerXAnchor),
+            isPinnedImageView.centerYAnchor.constraint(equalTo: isPinnedViewContainer.centerYAnchor),
+            isPinnedImageView.widthAnchor.constraint(equalToConstant: 8),
+            isPinnedImageView.heightAnchor.constraint(equalToConstant: 12),
+
 
             statisticLabel.topAnchor.constraint(equalTo: card.bottomAnchor, constant: 16),
             statisticLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12),

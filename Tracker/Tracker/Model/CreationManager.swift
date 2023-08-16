@@ -6,7 +6,7 @@ struct CreationManager {
     var schedule: [WeekDay] = []
     var selectedEmoji: String?
     var selectedColor: UIColor?
-    let listItems = ["Категория", "Расписание"]
+    let listItems = [NSLocalizedString("category", comment: "category title"), NSLocalizedString("schedule", comment: "schedule title")]
 
     let emojies = [
         "🙂","😻","🌺","🐶","❤️","😱",
@@ -23,6 +23,19 @@ struct CreationManager {
         UIColor.mediumPurlePink, UIColor.mediumPurle, UIColor.emeraldLight
     ]
 
+    let colorsHex: [String] = [
+        ColorMarshall.shared.encode(color: UIColor.sunsetOrange), ColorMarshall.shared.encode(color: UIColor.westSide),
+        ColorMarshall.shared.encode(color: UIColor.azureRadiance), ColorMarshall.shared.encode(color: UIColor.electricVioletBlue),
+        ColorMarshall.shared.encode(color: UIColor.emerald), ColorMarshall.shared.encode(color: UIColor.orchid),
+        ColorMarshall.shared.encode(color: UIColor.azalea), ColorMarshall.shared.encode(color: UIColor.dodgerBlue),
+        ColorMarshall.shared.encode(color: UIColor.turquoise), ColorMarshall.shared.encode(color: UIColor.minsk),
+        ColorMarshall.shared.encode(color: UIColor.persimmon), ColorMarshall.shared.encode(color: UIColor.carnationPink),
+        ColorMarshall.shared.encode(color: UIColor.manhattan), ColorMarshall.shared.encode(color: UIColor.cornflowerBlue),
+        ColorMarshall.shared.encode(color: UIColor.electricViolet), ColorMarshall.shared.encode(color: UIColor.mediumPurlePink),
+        ColorMarshall.shared.encode(color: UIColor.mediumPurle), ColorMarshall.shared.encode(color: UIColor.emeraldLight)
+    ]
+
+
     func newTracker() -> Tracker? {
         guard let selectedColor = selectedColor,
               let selectedEmoji = selectedEmoji else {
@@ -34,9 +47,27 @@ struct CreationManager {
             name: name,
             color: selectedColor,
             emoji: selectedEmoji,
-            schedule: schedule
+            schedule: schedule,
+            isPinned: false
         )
     }
+
+    func newTracker(id: UUID, isPinned: Bool) -> Tracker? {
+        guard let selectedColor = selectedColor,
+              let selectedEmoji = selectedEmoji else {
+            return nil
+        }
+
+        return Tracker(
+            id: id,
+            name: name,
+            color: selectedColor,
+            emoji: selectedEmoji,
+            schedule: schedule,
+            isPinned: isPinned
+        )
+    }
+
 
     func isReadyForCreation() -> Bool {
         guard let _ = selectedEmoji,
@@ -57,7 +88,7 @@ struct CreationManager {
     func getScheduleDescription() -> String {
         var description = ""
         if schedule.count == 7 {
-            return "Каждый день"
+            return NSLocalizedString("everyDay", comment: "String displays when user chose all days in schedule")
         }
 
         for weekDay in schedule {

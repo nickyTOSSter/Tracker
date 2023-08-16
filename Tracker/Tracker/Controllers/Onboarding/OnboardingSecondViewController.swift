@@ -15,7 +15,8 @@ final class OnboardingSecondViewController: UIViewController {
         label.lineBreakMode = .byWordWrapping
         var paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineHeightMultiple = 1
-        label.attributedText = NSMutableAttributedString(string: "Даже если это не литры воды и йога", attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
+        let title = NSLocalizedString("onboarding.title.second", comment: "title of first page of onboarding")
+        label.attributedText = NSMutableAttributedString(string: title, attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
 
         label.font = .systemFont(ofSize: 32, weight: .bold)
         label.textColor = .black
