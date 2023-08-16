@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VariablesViewState
+   version = "1.0">
+   <ContextStates>
+      <ContextState
+         contextName = "TrackersViewController.trackerWasCreated(categoryName:tracker:):TrackersViewController.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "category.name.lowercased() == categoryName.lowercased()">
+            </PersistentString>
+            <PersistentString
+               value = "category.name.lowercased()">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "ScheduleCell.switchValueChanged(sender:):ScheduleCell.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "sender.tag">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "TrackersViewController.numberOfSections(in:):TrackersViewController.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "visibleCategories.count">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "TrackersViewController.amountOfCompletedDays(for:):TrackersViewController.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "trackerRecordsForTracker.count">
+            </PersistentString>
+            <PersistentString
+               value = "completedTrackers.count">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "TrackersViewController.trackerCompletedButtonTapped(indexPath:):TrackersViewController.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "dateWithoutTime">
+            </PersistentString>
+            <PersistentString
+               value = "Date()">
+            </PersistentString>
+            <PersistentString
+               value = "Calendar.current.date(from: Calendar.current.dateComponents([.year, .month, .day], from: currentDate))">
+            </PersistentString>
+            <PersistentString
+               value = "currentDate">
+            </PersistentString>
+            <PersistentString
+               value = "Calendar.current.date(from: Calendar.current.dateComponents([.year, .month, .day], from: Date()))">
+            </PersistentString>
+            <PersistentString
+               value = "trackerRecord.completionDate">
+            </PersistentString>
+            <PersistentString
+               value = "">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "TrackersViewController.collectionView(_:cellForItemAt:):TrackersViewController.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "indexPath.section">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "TrackerStore.filter(by:and:):TrackerStore.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "weekDay.rawValue">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "TrackersViewController.viewDidLoad():TrackersViewController.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "Calendar.current.firstWeekday">
+            </PersistentString>
+            <PersistentString
+               value = "(Calendar.current.component(.weekday, from: currentDate) - Calendar.current.firstWeekday + 7)">
+            </PersistentString>
+            <PersistentString
+               value = "(Calendar.current.component(.weekday, from: currentDate) - Calendar.current.firstWeekday + 7) % 7 + 1">
+            </PersistentString>
+            <PersistentString
+               value = "Calendar.current.component(.weekday, from: currentDate)">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "RegularEventViewController.tableView(_:cellForRowAt:):RegularEventViewController.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "tableView.frame.size.width">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "EventCreationTableViewCell.init(style:reuseIdentifier:):EventCreationTableViewCell.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "contentView.frame.size.width">
+            </PersistentString>
+            <PersistentString
+               value = "frame.size.width">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "RegularEventViewController.setupViews():RegularEventViewController.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "scrollView.contentSize.width">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "CategoryViewModel.initialize():CategoryViewModel.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "categoryIsEmpty">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "RegularEventViewController.textFieldShouldClear(_:):RegularEventViewController.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "nameTextField.text">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "ScheduleViewController.switchValueChanged(for:value:):ScheduleViewController.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "schedule">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "RegularEventViewController.tableView(_:numberOfRowsInSection:):RegularEventViewController.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "listItems.count">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "TrackersViewController.dateChanged():TrackersViewController.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "currentDate">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "TrackersViewController.textField(_:shouldChangeCharactersIn:replacementString:):TrackersViewController.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "&quot;&#x41e;&#x43f;&#x440;&#x43e;&#x441;&quot;.range(of: &quot;&#x43f;&#x440;&#x43e;&quot;)">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "RegularEventViewController.textField(_:shouldChangeCharactersIn:replacementString:):RegularEventViewController.swift">
+      </ContextState>
+      <ContextState
+         contextName = "TrackersViewController.collectionView(_:numberOfItemsInSection:):TrackersViewController.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "visibleCategories[section].trackers">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "TrackersViewController.setupStubImageVisibility():TrackersViewController.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "visibleCategories.isEmpty">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "TrackersViewController.filterTrackers(with:):TrackersViewController.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "currentDate">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+   </ContextStates>
+</VariablesViewState>
